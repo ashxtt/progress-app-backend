@@ -5,6 +5,9 @@ const {PORT, DATABASE_URL} = process.env
 const express = require("express")
 const app = express()
 
+app.use(express.json());
+
+
 //importing mongoose
 const mongoose = require("mongoose")
 const morgan = require("morgan")
@@ -32,45 +35,38 @@ const Goal = mongoose.model("Goal", GoalSchema)
 
 //My Routes
 
-app.get("/", (req, res) => {
-    res.send("Ready to Progress :p");
-})
-
-//Index
-app.get("/goaladd", async (req, res)=>{
-    try {
-        res.status(200).json(await Goal.find({}));
-    } catch (error) {
-        res.status(400).json(error);
-    }
+app.get("/goals", async (req, res) => {
+    const goals = await Goal.find();
+    res.json(goals);
 });
 
 //Create
-app.post("/goaladd", async(req, res) =>{
-    try {
-        res.status(200).json(await Goal.create(req.body));
-    } catch (error) {
-        res.status(400).json(error);
-    }
+app.post("/goal/new", async (req, res)=>{
+    const goal = new Goal({
+        title: req.body.title,
+        body: req.body.body,
+        date: req.body.date
+    });
+    goal.save();
+    //add to our list
+    res.json(goal);
 });
 
-//update
-app.put("/goaladd/:id", async(req, res) => {
-    try {
-        res.status(200).json(await Goal.findByIdAndUpdate(req.params.id, req.body, {new: true}));
-    } catch (error) {
-        res.status(400).json(error);
-    }
+app.delete('/goal/delete/:id', async (req, res) => {
+    const result = await Goal.findByIdAndDelete(req.params.id);
+
+    res.json(result);
 });
 
-//Delete
-app.delete("/goaladd/:id", async (req, res) => {
-    try {
-        res.status(200).json(await Goal.findByIdAndDelete(req.params.id));
-    } catch (error) {
-      res.status(400).json(error);
-    }
-  });
+app.put('goal/complete/:id', async (req, res) => {
+    const goal = await Goal.findByIdAndUpdate(req.params.id);
+
+    
+
+    goal.save();
+
+    res.json(goal);
+})
 
 
 

@@ -33,48 +33,50 @@ const GoalSchema = new mongoose.Schema({
 
 const Goal = mongoose.model("Goal", GoalSchema)
 
-//My Routes
-
-app.get("/goals", async (req, res) => {
-    const goals = await Goal.find();
-    res.json(goals);
-});
-
-//Create
-app.post("/goal/new", async (req, res)=>{
-    const goal = new Goal({
-        title: req.body.title,
-        body: req.body.body,
-        date: req.body.date
-    });
-    goal.save();
-    //add to our list
-    res.json(goal);
-});
-
-app.delete('/goal/delete/:id', async (req, res) => {
-    const result = await Goal.findByIdAndDelete(req.params.id);
-
-    res.json(result);
-});
-
-app.put('goal/complete/:id', async (req, res) => {
-    const goal = await Goal.findByIdAndUpdate(req.params.id);
-
-    
-
-    goal.save();
-
-    res.json(goal);
-})
-
-
-
 // Middleware
 app.use(cors()); // prevents cross origin resource sharing errors, allows access to server from all origins i.e. react frontend
 app.use(morgan("dev")); // logs details of all server hits to terminal
 app.use(express.json()); // parse json bodies from request
 app.use(express.urlencoded({ extended: false })); // to use URL encoded
+
+//My Routes
+
+app.get("/goals", async (req, res) => {
+    try {
+     res.status(200).json(await Goal.find({}))
+    } catch (error) {
+     res.status(400).json(error)
+    }
+  })
+
+//Create
+app.post("/goals", async (req, res) => {
+    try {
+      res.status(200).json(await Goal.create(req.body));
+    } catch (error) {
+      res.status(400).json(error)
+    }
+  })
+
+
+  //delete
+  app.delete('/goals/:id', async (req, res) => {
+    try {
+        res.status(200).json(await Goal.findByIdAndDelete(req.params.id))
+    } catch (error) {
+        res.status(400).json(error)
+    }
+})
+
+
+//Update
+app.put('/goals/:id', async (req, res) => {
+    try {
+        res.status(200).json(await Goal.findByIdAndUpdate(req.params.id, req.body, {new: true}))
+    } catch (error) {
+        res.status(400).json(error)
+    }
+})
 
 
 

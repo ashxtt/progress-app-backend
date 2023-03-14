@@ -40,6 +40,9 @@ app.use(express.json()); // parse json bodies from request
 app.use(express.urlencoded({ extended: false })); // to use URL encoded
 
 //My Routes
+app.get("/", async(req, res) => {
+  res.send("Progress")
+})
 
 app.get("/goals", async (req, res) => {
     try {

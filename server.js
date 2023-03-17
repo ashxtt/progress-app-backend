@@ -1,8 +1,8 @@
 // .env
 require("dotenv").config()
 
-const { DATABASE_URL} = process.env
-const PORT = process.env.PORT;
+const { PORT,DATABASE_URL} = process.env
+
 const express = require("express")
 const app = express()
 
